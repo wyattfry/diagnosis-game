@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties, ReactNode } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Activity,
@@ -20,38 +21,44 @@ import {
   diseases,
   symptomLabels,
 } from "../src/lib/gameEngine";
+import type {
+  GameState,
+  ResearchDifficulty,
+  TypingPhase,
+  Units,
+} from "../src/lib/types";
 
 const UNIT_COOKIE = "diagnosis_units";
 const DIFFICULTY_COOKIE = "diagnosis_research_difficulty";
 
-function toImperialHeight(cm) {
+function toImperialHeight(cm: number) {
   const totalInches = Math.round(cm / 2.54);
   const feet = Math.floor(totalInches / 12);
   const inches = totalInches % 12;
   return `${feet}ft ${inches}in`;
 }
 
-function toImperialWeight(kg) {
+function toImperialWeight(kg: number) {
   return `${Math.round(kg * 2.20462)}lb`;
 }
 
-function toFahrenheit(celsius) {
+function toFahrenheit(celsius: number) {
   return `${((celsius * 9) / 5 + 32).toFixed(1)}F`;
 }
 
-function formatHeight(units, cm) {
+function formatHeight(units: Units, cm: number) {
   return units === "metric" ? `${cm}cm` : toImperialHeight(cm);
 }
 
-function formatWeight(units, kg) {
+function formatWeight(units: Units, kg: number) {
   return units === "metric" ? `${kg}kg` : toImperialWeight(kg);
 }
 
-function formatTemperature(units, celsius) {
+function formatTemperature(units: Units, celsius: number) {
   return units === "metric" ? `${celsius.toFixed(1)}C` : toFahrenheit(celsius);
 }
 
-function getCookieValue(name) {
+function getCookieValue(name: string) {
   if (typeof document === "undefined") return "";
   const cookies = document.cookie ? document.cookie.split("; ") : [];
   for (const cookie of cookies) {
@@ -61,12 +68,12 @@ function getCookieValue(name) {
   return "";
 }
 
-function setCookie(name, value, maxAgeSeconds) {
+function setCookie(name: string, value: string, maxAgeSeconds: number) {
   if (typeof document === "undefined") return;
   document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${maxAgeSeconds}; samesite=lax`;
 }
 
-function guessUnitsFromLocale() {
+function guessUnitsFromLocale(): Units {
   if (typeof navigator === "undefined") return "metric";
   const regionsUsingImperial = new Set(["US", "LR", "MM"]);
   const localeCandidates = [...(navigator.languages ?? []), navigator.language].filter(Boolean);
@@ -80,16 +87,16 @@ function guessUnitsFromLocale() {
   return "metric";
 }
 
-function firstSentence(text) {
+function firstSentence(text: string) {
   const match = text.match(/[^.!?]*[.!?]/);
   return match ? match[0].trim() : text;
 }
 
-function escapeRegExp(value) {
+function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-function renderHighlighted(text, query, keyPrefix) {
+function renderHighlighted(text: string, query: string, keyPrefix: string): ReactNode {
   const trimmed = query.trim();
   if (!trimmed) return text;
   const regex = new RegExp(`(${escapeRegExp(trimmed)})`, "ig");
@@ -102,19 +109,19 @@ function renderHighlighted(text, query, keyPrefix) {
 }
 
 export default function Home() {
-  const [gameState, setGameState] = useState(null);
-  const [units, setUnits] = useState("metric");
+  const [gameState, setGameState] = useState<GameState | null>(null);
+  const [units, setUnits] = useState<Units>("metric");
   const [searchTerm, setSearchTerm] = useState("");
-  const [typingPhase, setTypingPhase] = useState("idle");
-  const [pendingDiagnosisId, setPendingDiagnosisId] = useState(null);
+  const [typingPhase, setTypingPhase] = useState<TypingPhase>("idle");
+  const [pendingDiagnosisId, setPendingDiagnosisId] = useState<string | null>(null);
   const [showSummaryBar, setShowSummaryBar] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const [researchDifficulty, setResearchDifficulty] = useState("easy");
+  const [researchDifficulty, setResearchDifficulty] = useState<ResearchDifficulty>("easy");
   const [paneCycle, setPaneCycle] = useState(0);
 
-  const preTypingTimeoutRef = useRef(null);
-  const typingTimeoutRef = useRef(null);
-  const transcriptContainerRef = useRef(null);
+  const preTypingTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const transcriptContainerRef = useRef<HTMLDivElement | null>(null);
 
   const choices = useMemo(() => (gameState ? getAvailableChoices(gameState) : []), [gameState]);
   const allResearchDiseases = useMemo(
@@ -138,8 +145,8 @@ export default function Home() {
 
   useEffect(() => {
     return () => {
-      window.clearTimeout(preTypingTimeoutRef.current);
-      window.clearTimeout(typingTimeoutRef.current);
+      clearTimeout(preTypingTimeoutRef.current);
+      clearTimeout(typingTimeoutRef.current);
     };
   }, []);
 
@@ -152,7 +159,7 @@ export default function Home() {
     const initialDifficulty =
       savedDifficulty === "easy" || savedDifficulty === "medium" || savedDifficulty === "difficult"
         ? savedDifficulty
-        : "easy";
+        : ("easy" as ResearchDifficulty);
     setResearchDifficulty(initialDifficulty);
     setGameState(createInitialState({ difficulty: initialDifficulty }));
   }, []);
@@ -181,45 +188,45 @@ export default function Home() {
   }, [gameState?.result]);
 
   function clearReplyTimers() {
-    window.clearTimeout(preTypingTimeoutRef.current);
-    window.clearTimeout(typingTimeoutRef.current);
-    preTypingTimeoutRef.current = null;
-    typingTimeoutRef.current = null;
+    clearTimeout(preTypingTimeoutRef.current);
+    clearTimeout(typingTimeoutRef.current);
+    preTypingTimeoutRef.current = undefined;
+    typingTimeoutRef.current = undefined;
   }
 
-  function getTypingDurationMs(text) {
+  function getTypingDurationMs(text: string) {
     const minimum = 900;
     const byLength = text.length * 34;
     return Math.min(5600, minimum + byLength);
   }
 
-  function handleChoice(choiceId) {
+  function handleChoice(choiceId: string) {
     if (!gameState || typingPhase !== "idle" || gameState.result) return;
 
     const planned = planPatientReply(gameState, choiceId);
-    setGameState((prev) => applyDoctorChoice(prev, choiceId));
+    setGameState((prev) => (prev ? applyDoctorChoice(prev, choiceId) : prev));
     setTypingPhase("thinking");
 
     const preTypingDelay = 260 + Math.floor(Math.random() * 900);
     const typingDuration = getTypingDurationMs(planned.responseText);
 
-    preTypingTimeoutRef.current = window.setTimeout(() => {
+    preTypingTimeoutRef.current = setTimeout(() => {
       setTypingPhase("typing");
-      typingTimeoutRef.current = window.setTimeout(() => {
-        setGameState((prev) => applyPatientReply(prev, choiceId, planned.responseText));
+      typingTimeoutRef.current = setTimeout(() => {
+        setGameState((prev) => (prev ? applyPatientReply(prev, choiceId, planned.responseText) : prev));
         setTypingPhase("idle");
       }, typingDuration);
     }, preTypingDelay);
   }
 
-  function handleRequestDiagnosis(diseaseId) {
+  function handleRequestDiagnosis(diseaseId: string) {
     if (!gameState || typingPhase !== "idle" || gameState.result) return;
     setPendingDiagnosisId(diseaseId);
   }
 
   function handleConfirmDiagnosis() {
     if (!gameState || !pendingDiagnosisId || gameState.result) return;
-    setGameState((prev) => diagnose(prev, pendingDiagnosisId));
+    setGameState((prev) => (prev ? diagnose(prev, pendingDiagnosisId) : prev));
     setPendingDiagnosisId(null);
   }
 
@@ -268,7 +275,7 @@ export default function Home() {
       <section
         key={`stats-${paneCycle}`}
         className="stats-panel case-pane"
-        style={{ "--pane-delay": "0ms" }}
+        style={{ "--pane-delay": "0ms" } as CSSProperties}
       >
         <span className="patient-chip">
           <img className="patient-avatar" src={patientAvatarUrl} alt={`${patient.name} avatar`} />
@@ -301,7 +308,7 @@ export default function Home() {
         <article
           key={`interview-${paneCycle}`}
           className="panel interview-panel case-pane"
-          style={{ "--pane-delay": "90ms" }}
+          style={{ "--pane-delay": "90ms" } as CSSProperties}
         >
           <h2 className="title-with-icon">
             <MessageCircle size={18} />
@@ -339,7 +346,7 @@ export default function Home() {
         <article
           key={`symptoms-${paneCycle}`}
           className="panel case-pane"
-          style={{ "--pane-delay": "180ms" }}
+          style={{ "--pane-delay": "180ms" } as CSSProperties}
         >
           <h2 className="title-with-icon">
             <Activity size={18} />
@@ -359,7 +366,7 @@ export default function Home() {
         <article
           key={`research-${paneCycle}`}
           className="panel case-pane"
-          style={{ "--pane-delay": "270ms" }}
+          style={{ "--pane-delay": "270ms" } as CSSProperties}
         >
           <h2 className="title-with-icon">
             <Search size={18} />
@@ -428,13 +435,17 @@ export default function Home() {
           <div className="modal-card" role="dialog" aria-modal="true" aria-labelledby="settings-title">
             <h2 id="settings-title">Settings</h2>
             <label htmlFor="units">Units</label>
-            <select id="units" value={units} onChange={(event) => setUnits(event.target.value)}>
+            <select id="units" value={units} onChange={(event) => setUnits(event.target.value as Units)}>
               <option value="metric">Metric</option>
               <option value="imperial">Imperial</option>
             </select>
 
             <label htmlFor="difficulty">Research Difficulty</label>
-            <select id="difficulty" value={researchDifficulty} onChange={(event) => setResearchDifficulty(event.target.value)}>
+            <select
+              id="difficulty"
+              value={researchDifficulty}
+              onChange={(event) => setResearchDifficulty(event.target.value as ResearchDifficulty)}
+            >
               <option value="easy">Easy (definition + paragraph + symptoms)</option>
               <option value="medium">Medium (definition + paragraph)</option>
               <option value="difficult">Difficult (name + first definition sentence)</option>
