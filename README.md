@@ -79,11 +79,33 @@ Notes:
 
 ## Project Layout
 
-- `app/layout.js`: root layout
-- `app/page.js`: main UI and gameplay interactions
+- `app/layout.tsx`: root layout
+- `app/page.tsx`: main UI and gameplay interactions
 - `app/globals.css`: global styles
-- `src/lib/gameData.js`: starter diseases, symptoms, and case content
-- `src/lib/gameEngine.js`: core game-state logic
+- `src/lib/game-data/`: diseases, symptoms, persona pools, and case content
+- `src/lib/game-engine/`: core game-state logic split by responsibility
+- `src/lib/types.ts`: shared TypeScript game-domain types
+
+## Cloudflare Workers Deploy
+
+This repo is configured for OpenNext + Cloudflare Workers.
+
+```bash
+npm install
+npm run build
+npm run preview
+```
+
+Deploy:
+
+```bash
+npm run deploy
+```
+
+Config files:
+
+1. `wrangler.toml`
+2. `open-next.config.ts`
 
 ## Next MVP Expansions
 
