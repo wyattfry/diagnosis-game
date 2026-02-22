@@ -53,7 +53,7 @@ export const starterCases: StarterCase[] = [
       },
       {
         id: "fever",
-        text: "Have you had a fever, and how high did it get?",
+        text: "Have you had a high fever?",
         reveal: ["mild_fever"],
         anxietyDelta: 0,
         painDelta: 0,
@@ -471,7 +471,7 @@ export const starterCases: StarterCase[] = [
     interviewChoices: [
       {
         id: "pain-location",
-        text: "Where exactly is the pain now, and did it move there?",
+        text: "Any pain in your lower right abdomen?",
         reveal: ["right_lower_quadrant_pain", "abdominal_cramps"],
         anxietyDelta: -1,
         painDelta: 2,
@@ -581,7 +581,7 @@ export const starterCases: StarterCase[] = [
     interviewChoices: [
       {
         id: "timeline-weeks",
-        text: "How long have the bowel issues been going on?",
+        text: "Have the bowel issues been going on for a long time?",
         reveal: ["persistent_diarrhea", "fatigue"],
         anxietyDelta: -1,
         painDelta: 0,
@@ -637,7 +637,7 @@ export const starterCases: StarterCase[] = [
     interviewChoices: [
       {
         id: "chest-pressure",
-        text: "Can you describe the chest discomfort in your own words?",
+        text: "Would you say the chest discomfort is mild?",
         reveal: ["chest_pressure"],
         anxietyDelta: -1,
         painDelta: 2,
@@ -701,7 +701,7 @@ export const starterCases: StarterCase[] = [
       },
       {
         id: "fast-arm",
-        text: "Can you lift both arms? Is one weaker?",
+        text: "Can you lift both arms?",
         reveal: ["unilateral_weakness"],
         anxietyDelta: -1,
         painDelta: 0,
@@ -720,7 +720,7 @@ export const starterCases: StarterCase[] = [
       },
       {
         id: "delay-neuro",
-        text: "Would you like to just be observed for a few hours first?",
+        text: "Would you like to be observed for a few hours?",
         reveal: [],
         anxietyDelta: 14,
         painDelta: 1,
