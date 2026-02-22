@@ -21,6 +21,15 @@ import { createId, randomFloat, randomFrom, randomInt, clampFloat, sampleWithout
 const MAX_TEMP = 41.5;
 const MIN_TEMP = 35.0;
 
+export function getMaxCaseTierFromGamesCompleted(gamesCompleted: number): number {
+  // Tier 0 (easy): 0+ games
+  // Tier 1 (medium): 2+ games
+  // Tier 2 (hard): 4+ games
+  if (gamesCompleted >= 4) return 2;
+  if (gamesCompleted >= 2) return 1;
+  return 0;
+}
+
 function sampleDemographics(): { age: number; sexAssignedAtBirth: SexAssignedAtBirth } {
   return {
     age: randomInt(14, 84),
@@ -44,8 +53,9 @@ function caseWeight(activeCase: StarterCase, demographics: { age: number; sexAss
   return Math.max(0.03, ageWeight * sexWeight);
 }
 
-function chooseCase(demographics: { age: number; sexAssignedAtBirth: SexAssignedAtBirth }) {
-  const weighted = starterCases.map((candidate) => ({
+function chooseCase(demographics: { age: number; sexAssignedAtBirth: SexAssignedAtBirth }, maxCaseTier: number = 2) {
+  const availableCases = starterCases.filter((c) => (c.caseTier ?? 0) <= maxCaseTier);
+  const weighted = availableCases.map((candidate) => ({
     candidate,
     weight: caseWeight(candidate, demographics),
   }));
@@ -158,10 +168,11 @@ function buildActiveCase(baseCase: StarterCase, difficulty: ResearchDifficulty =
   };
 }
 
-export function createInitialState(options: { difficulty?: ResearchDifficulty } = {}): GameState {
+export function createInitialState(options: { difficulty?: ResearchDifficulty; maxCaseTier?: number } = {}): GameState {
   const difficulty = options.difficulty ?? "easy";
+  const maxCaseTier = options.maxCaseTier ?? 2;
   const demographics = sampleDemographics();
-  const activeCase = buildActiveCase(chooseCase(demographics), difficulty);
+  const activeCase = buildActiveCase(chooseCase(demographics, maxCaseTier), difficulty);
   const patient = buildPatientProfile(activeCase.patient, activeCase, demographics);
 
   return {

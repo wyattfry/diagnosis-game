@@ -1,142 +1,121 @@
 # Medical Diagnosis Game
 
-This is a game about diagnosing patients. The main game loop is:
+A medical diagnosis simulation game where you interview patients, research diseases, and make diagnostic decisions. Players face increasingly complex cases as they improve.
 
-1. You are presented with a patient and their vitals
-2. You have a dialog tree with the patient to gather symptoms
-3. You search a "database" of illnesses to find one that most closely matches the symptoms
-4. You select the illness to make the diagnosis
+**Play it live**: https://diagnosis-game.wyattfry.workers.dev/
 
-You play as a junior medical doctor intern student person working at a practice. The senior staff starts out only sending you "easy" cases that they believe are not serious, e.g. flu, cold, norovirus, or other "simple" common diseases. As you gain experience, they send increasingly complex cases your way.
+## Game Mechanics
 
-## Interface
+1. **Interview**: Ask the patient questions to discover symptoms
+2. **Research**: Search a database of diseases to find matches
+3. **Diagnose**: Select the illness you believe the patient has
+4. **Progress**: Correctly diagnose cases to unlock harder difficulty tiers
 
-You are presented with:
+Players balance **anxiety** and **pain** levels—pushing too hard damages the patient relationship and triggers anxiety penalties.
 
-1. patient vitals (name, age, gender, height, weight, complaint, BP, BPM, temperature)
-2. a running list of discovered symptoms
-3. patient's live stats: pain, anxiety
+## Features
 
-## Gather Symptoms
+- ✅ SMS-style interview with typing animations
+- ✅ 11 randomized patient cases across 3 difficulty tiers
+- ✅ Dynamic question revealing (new questions unlock as you discover symptoms)
+- ✅ Progressive difficulty progression (auto-unlocks harder cases after 2+ diagnoses)
+- ✅ 18 disease database with symptoms, definitions, and descriptions
+- ✅ Metric/Imperial unit toggle
+- ✅ Auto-versioning with git integration
+- ✅ Runs on Cloudflare Workers (no backend needed)
 
-The main mechanic here is the dialog tree.
+## Quick Start
 
-## Research
+### Play Online
+Go to: https://diagnosis-game.wyattfry.workers.dev/
 
-A search box where user types search terms, diseases are listed below
-
-## Diagnosis
-
-User selects a disease from the database.
-
-## Win and Lose Conditions
-
-Player wins by correctly diagnosing the illness.
-
-Player loses if patient's anxiety or pain hits maximum and patient leaves or passes out (respectively). Player loses if they incorrectly diagnose. The player's choices will affect the patient's anxiety level. The pain level may fluctuate on its own.
-
-## MVP Status
-
-This repository now includes a playable Next.js MVP with an SMS-style interview flow.
-
-Implemented:
-
-1. Next.js app-router project structure
-2. SMS interview transcript with doctor/patient/system bubbles
-3. Simulated patient typing delay with animated ellipsis before patient responses
-4. Interview choices that reveal symptoms and affect anxiety/pain
-5. Disease research cards with definition, description, and common symptoms
-6. Patient unit toggle (metric or imperial)
-7. Diagnosis result modal with next patient flow
-8. Randomized patient names and identity labels for more case variety
-
-## Run Locally
-
+### Run Locally
 ```bash
-cd /home/wyatt/diagnosis-game
 npm install
 npm run dev
 ```
+Open http://localhost:3000
 
-Then open `http://localhost:3000` in your browser.
-
-For another device on your LAN, open `http://<your-machine-ip>:3000` and set:
-
+For LAN access:
 ```bash
-ALLOWED_DEV_ORIGINS=<your-machine-ip> npm run dev
+ALLOWED_DEV_ORIGINS=192.168.1.20 npm run dev
 ```
 
-For multiple hosts/IPs, separate with commas:
+## Documentation
 
-```bash
-ALLOWED_DEV_ORIGINS=10.0.0.136,192.168.1.20 npm run dev
+- **[CHANGELOG.md](CHANGELOG.md)** - All changes and features
+- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Deploy setup, GitHub Actions, Cloudflare config
+- **[wrangler.toml](wrangler.toml)** - Cloudflare Workers configuration
+- **[package.json](package.json)** - Dependencies and scripts
+
+## Project Structure
+
+```
+app/                          # Next.js frontend
+  page.tsx                   # Main game UI
+  components/VersionFooter.tsx
+  globals.css
+
+src/lib/
+  game-engine/               # Core game logic
+    caseFactory.ts          # Case selection & initialization
+    interview.ts            # Dialog flow & symptoms
+    diagnosis.ts            # Win/loss logic
+    research.ts             # Disease filtering
+    terminal.ts             # Game-over conditions
+  game-data/                 # Content
+    cases.ts                # 11 patient cases (tiered by difficulty)
+    catalog.ts              # 18 disease definitions
+    persona.ts              # Patient names & identities
+  types.ts                  # TypeScript types
+  
+scripts/generate-version.js  # Build-time version generation
+
+.github/workflows/
+  version-and-deploy.yml    # GitHub Actions CI/CD
 ```
 
-Notes:
-
-1. `localhost` and `127.0.0.1` are allowed by default for same-machine access.
-2. If you hit a runtime error like `Cannot find module './255.js'`, restart dev server to clear stale `.next` artifacts (the `dev` script now auto-clears `.next`).
-
-## Project Layout
-
-- `app/layout.tsx`: root layout
-- `app/page.tsx`: main UI and gameplay interactions
-- `app/globals.css`: global styles
-- `src/lib/game-data/`: diseases, symptoms, persona pools, and case content
-- `src/lib/game-engine/`: core game-state logic split by responsibility
-- `src/lib/types.ts`: shared TypeScript game-domain types
-
-## Cloudflare Workers Deploy
-
-This repo is configured for OpenNext + Cloudflare Workers.
+## Development Scripts
 
 ```bash
-npm install
-npm run build
-npm run preview
+npm run dev              # Start dev server (generates version)
+npm run build            # Build Next.js
+npm run build:cf         # Build for Cloudflare Workers
+npm run preview          # Preview Cloudflare build
+npm run deploy           # Deploy to Cloudflare (manual)
+npm run generate-version # Generate version.ts manually
+npm run test             # Run tests (vitest)
 ```
 
-Deploy:
+## Deployment
 
-```bash
-npm run deploy
-```
+**Automatic**: Pushes to `main` → GitHub Actions → Cloudflare Workers
+**Manual**: Run `npm run deploy` locally
 
-Config files:
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed setup.
 
-1. `wrangler.toml`
-2. `open-next.config.ts`
+## Case Difficulty Tiers
 
-## Versioning
+| Tier | Cases | Intro | After |
+|------|-------|-------|-------|
+| **0** (Easy) | Cold, Norovirus, UTI | First game | Game 1 |
+| **1** (Medium) | Flu, Strep, Migraine, Mono | After 2 games | Game 2-3 |
+| **2** (Hard) | Appendix, Pneumonia, Crohn's, Heart Attack | After 4 games | Game 4+ |
 
-This project uses **automatic versioning** with GitHub Actions:
+## Tech Stack
 
-- Every push to `main` automatically bumps the patch version (e.g., `0.1.0` → `0.1.1`)
-- Version info is generated at build time and displayed at the bottom of the page
-- The version footer shows: `v{VERSION} ({GIT_HASH}) — {BUILD_DATE}`
+- **Frontend**: Next.js 15 (React 19)
+- **UI**: Vanilla CSS + Lucide React icons
+- **Hosting**: Cloudflare Workers (OpenNext adapter)
+- **Versioning**: Automated via GitHub Actions
+- **Types**: TypeScript
+- **Testing**: Vitest
 
-### How it works:
+## Known Issues & Improvements
 
-1. **Local development**: Run `npm run generate-version` before building (included in build scripts)
-2. **GitHub Action**: On push to `main`, the workflow:
-   - Bumps the patch version in `package.json`
-   - Generates `src/lib/version.ts` with version metadata
-   - Commits the changes
-   - Triggers deployment to Cloudflare
+See [CHANGELOG.md](CHANGELOG.md) for "Future Improvements" section.
 
-### Version info available:
+## License
 
-- `VERSION`: Semantic version
-- `GIT_HASH`: Short commit hash
-- `GIT_BRANCH`: Current branch
-- `BUILD_TIME`: ISO timestamp
-- `BUILD_DATE`: Formatted date
-- `getVersionString()`: Quick version string
-- `getFullVersionString()`: Detailed version string
-
-## Next MVP Expansions
-
-1. Add more diseases and case tiers for progression
-2. Convert interview choices into multi-step dialog trees
-3. Add scoring/debrief screen with missed clues and differential ranking
+Private project
 4. Make patients persistant, with symptoms and diseases that develop over time in response to the treatment.

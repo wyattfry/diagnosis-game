@@ -19,6 +19,7 @@ import {
   diagnose,
   getAvailableChoices,
   getResearchDiseases,
+  getMaxCaseTierFromGamesCompleted,
   diseases,
   symptomLabels,
 } from "../src/lib/gameEngine";
@@ -31,6 +32,7 @@ import type {
 
 const UNIT_COOKIE = "diagnosis_units";
 const DIFFICULTY_COOKIE = "diagnosis_research_difficulty";
+const GAMES_COMPLETED_COOKIE = "diagnosis_games_completed";
 
 function toImperialHeight(cm: number) {
   const totalInches = Math.round(cm / 2.54);
@@ -118,6 +120,7 @@ export default function Home() {
   const [showSummaryBar, setShowSummaryBar] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [researchDifficulty, setResearchDifficulty] = useState<ResearchDifficulty>("easy");
+  const [gamesCompleted, setGamesCompleted] = useState(0);
   const [paneCycle, setPaneCycle] = useState(0);
 
   const preTypingTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -162,7 +165,12 @@ export default function Home() {
         ? savedDifficulty
         : ("easy" as ResearchDifficulty);
     setResearchDifficulty(initialDifficulty);
-    setGameState(createInitialState({ difficulty: initialDifficulty }));
+
+    const savedGamesCompleted = parseInt(getCookieValue(GAMES_COMPLETED_COOKIE) || "0", 10);
+    setGamesCompleted(savedGamesCompleted);
+
+    const maxCaseTier = getMaxCaseTierFromGamesCompleted(savedGamesCompleted);
+    setGameState(createInitialState({ difficulty: initialDifficulty, maxCaseTier }));
   }, []);
 
   useEffect(() => {
@@ -234,7 +242,13 @@ export default function Home() {
   function handleNextPatient() {
     clearReplyTimers();
     window.scrollTo({ top: 0, behavior: "smooth" });
-    setGameState(createInitialState({ difficulty: researchDifficulty }));
+
+    const newGamesCompleted = gamesCompleted + 1;
+    setGamesCompleted(newGamesCompleted);
+    setCookie(GAMES_COMPLETED_COOKIE, newGamesCompleted.toString(), 60 * 60 * 24 * 365);
+
+    const maxCaseTier = getMaxCaseTierFromGamesCompleted(newGamesCompleted);
+    setGameState(createInitialState({ difficulty: researchDifficulty, maxCaseTier }));
     setSearchTerm("");
     setTypingPhase("idle");
     setPendingDiagnosisId(null);
@@ -451,6 +465,22 @@ export default function Home() {
               <option value="medium">Medium (definition + paragraph)</option>
               <option value="difficult">Difficult (name + first definition sentence)</option>
             </select>
+
+            <div style={{ marginTop: "1.5rem", paddingTop: "1rem", borderTop: "1px solid var(--line)" }}>
+              <h3 style={{ marginTop: 0, fontSize: "0.95rem" }}>Progression</h3>
+              <p style={{ margin: "0.5rem 0", fontSize: "0.9rem", color: "var(--ink-soft)" }}>
+                Cases completed: <strong>{gamesCompleted}</strong>
+              </p>
+              <p style={{ margin: "0.5rem 0", fontSize: "0.9rem", color: "var(--ink-soft)" }}>
+                Tier unlocked: <strong>{getMaxCaseTierFromGamesCompleted(gamesCompleted) === 0 ? "Easy" : getMaxCaseTierFromGamesCompleted(gamesCompleted) === 1 ? "Medium" : "Hard"}</strong>
+              </p>
+              <p style={{ margin: "0.5rem 0", fontSize: "0.85rem", color: "var(--ink-soft)" }}>
+                {gamesCompleted < 2 && `Complete ${2 - gamesCompleted} more case${2 - gamesCompleted === 1 ? "" : "s"} to unlock Medium tier`}
+                {gamesCompleted >= 2 && gamesCompleted < 4 && `Complete ${4 - gamesCompleted} more case${4 - gamesCompleted === 1 ? "" : "s"} to unlock Hard tier`}
+                {gamesCompleted >= 4 && "All tiers unlocked! 🎉"}
+              </p>
+            </div>
+
             <div className="modal-actions">
               <button className="secondary-button" onClick={() => setShowSettingsModal(false)}>
                 Close

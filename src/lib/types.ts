@@ -65,6 +65,7 @@ export interface StarterCase {
   startingAnxiety: number;
   startingPain: number;
   interviewChoices: InterviewChoice[];
+  caseTier?: number;
 }
 
 export interface PatientProfile extends CasePatientTemplate {
@@ -94,4 +95,10 @@ export interface GameState {
   pain: number;
   result: GameResult | null;
   transcript: TranscriptEntry[];
+}
+
+export interface GameStats {
+  gamesCompleted: number;
+  correctDiagnoses: number;
+  unlockedDifficulty: "easy" | "medium" | "difficult";
 }

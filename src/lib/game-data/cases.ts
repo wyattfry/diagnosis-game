@@ -13,6 +13,7 @@ export const starterCases: StarterCase[] = [
     },
     diagnosisId: "common-cold",
     complaintCategories: ["upper_respiratory", "viral_systemic"],
+    caseTier: 0,
     startingAnxiety: 20,
     startingPain: 18,
     interviewChoices: [
@@ -83,6 +84,7 @@ export const starterCases: StarterCase[] = [
     },
     diagnosisId: "influenza",
     complaintCategories: ["viral_systemic", "upper_respiratory"],
+    caseTier: 1,
     startingAnxiety: 26,
     startingPain: 25,
     interviewChoices: [
@@ -147,6 +149,7 @@ export const starterCases: StarterCase[] = [
     },
     diagnosisId: "norovirus",
     complaintCategories: ["gastro_acute"],
+    caseTier: 0,
     startingAnxiety: 30,
     startingPain: 32,
     interviewChoices: [
@@ -211,6 +214,7 @@ export const starterCases: StarterCase[] = [
     },
     diagnosisId: "strep-throat",
     complaintCategories: ["throat_severe"],
+    caseTier: 1,
     startingAnxiety: 24,
     startingPain: 28,
     interviewChoices: [
@@ -275,6 +279,7 @@ export const starterCases: StarterCase[] = [
     },
     diagnosisId: "migraine",
     complaintCategories: ["headache_neuro"],
+    caseTier: 1,
     startingAnxiety: 22,
     startingPain: 36,
     interviewChoices: [
@@ -339,6 +344,7 @@ export const starterCases: StarterCase[] = [
     },
     diagnosisId: "uti",
     complaintCategories: ["urinary_irritative"],
+    caseTier: 0,
     startingAnxiety: 24,
     startingPain: 22,
     interviewChoices: [
@@ -403,6 +409,7 @@ export const starterCases: StarterCase[] = [
     },
     diagnosisId: "mononucleosis",
     complaintCategories: ["fatigue_throat", "throat_severe"],
+    caseTier: 1,
     startingAnxiety: 25,
     startingPain: 24,
     interviewChoices: [
@@ -458,6 +465,7 @@ export const starterCases: StarterCase[] = [
     },
     diagnosisId: "appendicitis",
     complaintCategories: ["abdominal_acute", "gastro_acute"],
+    caseTier: 2,
     startingAnxiety: 28,
     startingPain: 41,
     interviewChoices: [
@@ -512,8 +520,7 @@ export const starterCases: StarterCase[] = [
       temperatureC: 38.6,
     },
     diagnosisId: "pneumonia",
-    complaintCategories: ["respiratory_lower", "viral_systemic"],
-    startingAnxiety: 27,
+    complaintCategories: ["respiratory_lower", "viral_systemic"],    caseTier: 2,    startingAnxiety: 27,
     startingPain: 29,
     interviewChoices: [
       {
@@ -568,6 +575,7 @@ export const starterCases: StarterCase[] = [
     },
     diagnosisId: "crohns-disease",
     complaintCategories: ["gi_chronic"],
+    caseTier: 2,
     startingAnxiety: 29,
     startingPain: 26,
     interviewChoices: [
@@ -623,6 +631,7 @@ export const starterCases: StarterCase[] = [
     },
     diagnosisId: "myocardial-infarction",
     complaintCategories: ["chest_pressure"],
+    caseTier: 2,
     startingAnxiety: 36,
     startingPain: 48,
     interviewChoices: [
@@ -711,7 +720,7 @@ export const starterCases: StarterCase[] = [
       },
       {
         id: "delay-neuro",
-        text: "Should we just observe for a few hours first?",
+        text: "Would you like to just be observed for a few hours first?",
         reveal: [],
         anxietyDelta: 14,
         painDelta: 1,
