@@ -138,11 +138,19 @@ export const redHerringChoices: StarterCase["interviewChoices"] = [
   },
 ];
 
-export const ambiguousReplies: string[] = [
+export const ambiguousRepliesPast: string[] = [
+  "I can't remember.",
+  "Sometimes that happens, yeah.",
+  "Not that I have noticed much.",
+  "It does happen occasionally.",
+  "Only now and then.",
+  "Sometimes yes, sometimes no.",
+];
+
+export const ambiguousRepliesGeneral: string[] = [
   "Maybe, I guess.",
   "Possibly, yeah.",
   "I think so.",
-  "I can't remember.",
   "I guess so, on and off.",
   "Not really, I do not think so.",
   "Could be, maybe.",
@@ -151,24 +159,22 @@ export const ambiguousReplies: string[] = [
   "More like no than yes.",
   "Hard to say.",
   "A little bit, I think.",
-  "Sometimes that happens, yeah.",
-  "Not that I have noticed much.",
-  "It does happen occasionally.",
   "I would not say that exactly.",
   "Probably, at least a little.",
   "Maybe not, hard to say.",
   "I think so, but I am unsure.",
-  "Only now and then.",
   "If you think so.",
   "Yeah, somewhat.",
   "No, not really.",
   "I guess that fits a little.",
   "I am not fully sure, but maybe.",
-  "Sometimes yes, sometimes no.",
   "More yes than no, I think.",
   "I would not rule it out.",
   "I am not confident either way.",
 ];
+
+// Backwards-compatible export
+export const ambiguousReplies: string[] = [...ambiguousRepliesPast, ...ambiguousRepliesGeneral];
 
 export const complaintPools: Record<string, string[]> = {
   upper_respiratory: [

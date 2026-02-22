@@ -4,6 +4,8 @@ export {
   identityPool,
   redHerringChoices,
   ambiguousReplies,
+  ambiguousRepliesPast,
+  ambiguousRepliesGeneral,
   complaintPools,
 } from "./game-data/persona";
 export { starterCases } from "./game-data/cases";
