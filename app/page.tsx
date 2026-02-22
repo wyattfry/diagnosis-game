@@ -10,6 +10,7 @@ import {
   Settings2,
   Thermometer,
 } from "lucide-react";
+import { VersionFooter } from "./components/VersionFooter";
 import {
   createInitialState,
   applyDoctorChoice,
@@ -509,6 +510,8 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      <VersionFooter />
     </main>
   );
 }

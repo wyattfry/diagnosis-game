@@ -543,3 +543,21 @@ mark {
     grid-template-columns: 1fr;
   }
 }
+.version-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(242, 248, 246, 0.95);
+  border-top: 1px solid var(--line);
+  padding: 0.6rem 1.2rem;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+  z-index: 10;
+  backdrop-filter: blur(4px);
+}
+
+.version-footer small {
+  font-family: "Courier New", monospace;
+}

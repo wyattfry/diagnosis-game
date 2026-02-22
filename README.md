@@ -107,8 +107,36 @@ Config files:
 1. `wrangler.toml`
 2. `open-next.config.ts`
 
+## Versioning
+
+This project uses **automatic versioning** with GitHub Actions:
+
+- Every push to `main` automatically bumps the patch version (e.g., `0.1.0` → `0.1.1`)
+- Version info is generated at build time and displayed at the bottom of the page
+- The version footer shows: `v{VERSION} ({GIT_HASH}) — {BUILD_DATE}`
+
+### How it works:
+
+1. **Local development**: Run `npm run generate-version` before building (included in build scripts)
+2. **GitHub Action**: On push to `main`, the workflow:
+   - Bumps the patch version in `package.json`
+   - Generates `src/lib/version.ts` with version metadata
+   - Commits the changes
+   - Triggers deployment to Cloudflare
+
+### Version info available:
+
+- `VERSION`: Semantic version
+- `GIT_HASH`: Short commit hash
+- `GIT_BRANCH`: Current branch
+- `BUILD_TIME`: ISO timestamp
+- `BUILD_DATE`: Formatted date
+- `getVersionString()`: Quick version string
+- `getFullVersionString()`: Detailed version string
+
 ## Next MVP Expansions
 
 1. Add more diseases and case tiers for progression
 2. Convert interview choices into multi-step dialog trees
 3. Add scoring/debrief screen with missed clues and differential ranking
+4. Make patients persistant, with symptoms and diseases that develop over time in response to the treatment.

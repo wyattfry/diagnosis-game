@@ -2,10 +2,12 @@
   "name": "diagnosis-game",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "rm -rf .next && next dev -H 0.0.0.0 -p 3000",
-    "build": "next build",
-    "build:cf": "opennextjs-cloudflare build",
+    "generate-version": "node scripts/generate-version.js",
+    "dev": "npm run generate-version && rm -rf .next && next dev -H 0.0.0.0 -p 3000",
+    "build": "npm run generate-version && next build",
+    "build:cf": "npm run generate-version && opennextjs-cloudflare build",
     "start": "next start",
     "preview": "npm run build:cf && opennextjs-cloudflare preview",
     "deploy": "npm run build:cf && opennextjs-cloudflare deploy",
@@ -22,6 +24,7 @@
     "@types/node": "^25.2.3",
     "@types/react": "^19.2.14",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.18"
+    "vitest": "^4.0.18",
+    "wrangler": "^4.59.2"
   }
 }
