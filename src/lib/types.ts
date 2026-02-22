@@ -45,6 +45,7 @@ export interface InterviewChoice {
   requiresAny?: string[];
   requiresAll?: string[];
   note?: string;
+  aboutPast?: boolean;
 }
 
 export interface CasePatientTemplate {

@@ -46,6 +46,7 @@ export const redHerringChoices: StarterCase["interviewChoices"] = [
   {
     id: "red-herring-weather",
     text: "Did recent weather changes start all of this?",
+    aboutPast: true,
     reveal: [],
     anxietyDelta: 5,
     painDelta: 0,
@@ -58,6 +59,7 @@ export const redHerringChoices: StarterCase["interviewChoices"] = [
   {
     id: "red-herring-travel",
     text: "Have you recently flown on a plane this month?",
+    aboutPast: true,
     reveal: [],
     anxietyDelta: 4,
     painDelta: 0,
@@ -67,6 +69,7 @@ export const redHerringChoices: StarterCase["interviewChoices"] = [
   {
     id: "red-herring-zodiac",
     text: "Do your symptoms get worse based on your zodiac cycle?",
+    aboutPast: false,
     reveal: [],
     anxietyDelta: 9,
     painDelta: 1,
@@ -76,6 +79,7 @@ export const redHerringChoices: StarterCase["interviewChoices"] = [
   {
     id: "red-herring-energy-drink",
     text: "Would an energy drink fix this quickly for you?",
+    aboutPast: false,
     reveal: [],
     anxietyDelta: 8,
     painDelta: 1,
@@ -85,6 +89,7 @@ export const redHerringChoices: StarterCase["interviewChoices"] = [
   {
     id: "red-herring-screen-time",
     text: "Could too much phone screen time be the whole cause?",
+    aboutPast: false,
     reveal: [],
     anxietyDelta: 6,
     painDelta: 0,
@@ -94,6 +99,7 @@ export const redHerringChoices: StarterCase["interviewChoices"] = [
   {
     id: "red-herring-caffeine-cutoff",
     text: "How many coffees did you have this morning exactly?",
+    aboutPast: true,
     reveal: [],
     anxietyDelta: 4,
     painDelta: 0,
@@ -103,6 +109,7 @@ export const redHerringChoices: StarterCase["interviewChoices"] = [
   {
     id: "red-herring-office-chair",
     text: "Did your office chair setup trigger this whole thing?",
+    aboutPast: true,
     reveal: [],
     anxietyDelta: 5,
     painDelta: 0,
@@ -112,6 +119,7 @@ export const redHerringChoices: StarterCase["interviewChoices"] = [
   {
     id: "red-herring-laundry-detergent",
     text: "Did you switch laundry detergent this week?",
+    aboutPast: true,
     reveal: [],
     anxietyDelta: 5,
     painDelta: 0,
@@ -121,6 +129,7 @@ export const redHerringChoices: StarterCase["interviewChoices"] = [
   {
     id: "red-herring-sleep-app",
     text: "What did your sleep tracker app score last night?",
+    aboutPast: true,
     reveal: [],
     anxietyDelta: 6,
     painDelta: 0,
@@ -130,6 +139,7 @@ export const redHerringChoices: StarterCase["interviewChoices"] = [
   {
     id: "red-herring-step-count",
     text: "Could low step count this week explain everything?",
+    aboutPast: true,
     reveal: [],
     anxietyDelta: 5,
     painDelta: 0,
