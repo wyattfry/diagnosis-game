@@ -140,9 +140,7 @@ export const redHerringChoices: StarterCase["interviewChoices"] = [
 
 export const ambiguousReplies: string[] = [
   "Maybe, I guess.",
-  "Kind of, sometimes.",
   "Possibly, yeah.",
-  "It's possible.",
   "I think so.",
   "I can't remember.",
   "I guess so, on and off.",
@@ -151,7 +149,7 @@ export const ambiguousReplies: string[] = [
   "Sort of, but not always.",
   "I am leaning yes, but not strongly.",
   "More like no than yes.",
-  "Hard to pin down, honestly.",
+  "Hard to say.",
   "A little bit, I think.",
   "Sometimes that happens, yeah.",
   "Not that I have noticed much.",
@@ -161,7 +159,7 @@ export const ambiguousReplies: string[] = [
   "Maybe not, hard to say.",
   "I think so, but I am unsure.",
   "Only now and then.",
-  "Could go either way.",
+  "If you think so.",
   "Yeah, somewhat.",
   "No, not really.",
   "I guess that fits a little.",

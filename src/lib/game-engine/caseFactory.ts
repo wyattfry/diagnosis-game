@@ -169,6 +169,7 @@ export function createInitialState(options: { difficulty?: ResearchDifficulty } 
     patient,
     discoveredSymptoms: [],
     questionCounts: {},
+    newlyRevealedChoices: [],
     anxiety: activeCase.startingAnxiety,
     pain: activeCase.startingPain,
     result: null,

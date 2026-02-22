@@ -89,6 +89,7 @@ export interface GameState {
   patient: PatientProfile;
   discoveredSymptoms: string[];
   questionCounts: Record<string, number>;
+  newlyRevealedChoices: InterviewChoice[];
   anxiety: number;
   pain: number;
   result: GameResult | null;

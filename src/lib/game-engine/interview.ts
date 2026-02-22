@@ -47,19 +47,44 @@ function pickPatientResponse(choice: InterviewChoice, repeatCount: number) {
   return choice.note ?? "Okay.";
 }
 
+function isChoiceAvailable(choice: InterviewChoice, discoveredSet: Set<string>): boolean {
+  const requiresAny = choice.requiresAny ?? [];
+  const requiresAll = choice.requiresAll ?? [];
+  const anyPass = requiresAny.length === 0 || requiresAny.some((symptom) => discoveredSet.has(symptom));
+  const allPass = requiresAll.length === 0 || requiresAll.every((symptom) => discoveredSet.has(symptom));
+  return anyPass && allPass;
+}
+
 export function getAvailableChoices(state: GameState): InterviewChoice[] {
   const discoveredSet = new Set(state.discoveredSymptoms);
-  return state.activeCase.interviewChoices.filter((choice) => {
-    const requiresAny = choice.requiresAny ?? [];
-    const requiresAll = choice.requiresAll ?? [];
-    const anyPass = requiresAny.length === 0 || requiresAny.some((symptom) => discoveredSet.has(symptom));
-    const allPass = requiresAll.length === 0 || requiresAll.every((symptom) => discoveredSet.has(symptom));
-    return anyPass && allPass;
+  const originalChoices = state.activeCase.interviewChoices.filter((choice) =>
+    isChoiceAvailable(choice, discoveredSet)
+  );
+  
+  // Include newly revealed choices
+  return [...originalChoices, ...state.newlyRevealedChoices];
+}
+
+function generateNewChoice(state: GameState): InterviewChoice | null {
+  const discoveredSet = new Set(state.discoveredSymptoms);
+  
+  // Find original choices that aren't yet available but could become available
+  const unrevealed = state.activeCase.interviewChoices.filter((choice) => {
+    const isCurrentlyAvailable = isChoiceAvailable(choice, discoveredSet);
+    const isAlreadyRevealed = state.newlyRevealedChoices.some((revealed) => revealed.id === choice.id);
+    return !isCurrentlyAvailable && !isAlreadyRevealed;
   });
+
+  if (unrevealed.length === 0) return null;
+  
+  // Randomly pick one to reveal
+  return unrevealed[randomInt(0, unrevealed.length - 1)];
 }
 
 export function planPatientReply(state: GameState, choiceId: string): { responseText: string } {
-  const choice = state.activeCase.interviewChoices.find((entry) => entry.id === choiceId);
+  const choice =
+    state.activeCase.interviewChoices.find((entry) => entry.id === choiceId) ||
+    state.newlyRevealedChoices.find((entry) => entry.id === choiceId);
   if (!choice) return { responseText: "Okay." };
   const repeatCount = state.questionCounts[choice.id] ?? 0;
   return { responseText: pickPatientResponse(choice, repeatCount) };
@@ -68,7 +93,9 @@ export function planPatientReply(state: GameState, choiceId: string): { response
 export function applyDoctorChoice(state: GameState, choiceId: string): GameState {
   if (state.result) return state;
 
-  const choice = state.activeCase.interviewChoices.find((entry) => entry.id === choiceId);
+  const choice =
+    state.activeCase.interviewChoices.find((entry) => entry.id === choiceId) ||
+    state.newlyRevealedChoices.find((entry) => entry.id === choiceId);
   if (!choice) return state;
 
   return {
@@ -87,7 +114,9 @@ export function applyDoctorChoice(state: GameState, choiceId: string): GameState
 export function applyPatientReply(state: GameState, choiceId: string, responseText?: string): GameState {
   if (state.result) return state;
 
-  const choice = state.activeCase.interviewChoices.find((entry) => entry.id === choiceId);
+  const choice =
+    state.activeCase.interviewChoices.find((entry) => entry.id === choiceId) ||
+    state.newlyRevealedChoices.find((entry) => entry.id === choiceId);
   if (!choice) return state;
 
   const repeatCount = state.questionCounts[choice.id] ?? 0;
@@ -98,7 +127,17 @@ export function applyPatientReply(state: GameState, choiceId: string, responseTe
   const pain = clamp(state.pain + choice.painDelta + randomInt(-1, 2));
   const terminal = checkTerminalState(anxiety, pain);
 
-  return {
+  const newTranscript = [
+    ...state.transcript,
+    {
+      id: createId(),
+      role: "patient" as const,
+      text: resolvedText,
+    },
+  ];
+
+  // Create a new state with updated symptoms first
+  const stateWithSymptoms: GameState = {
     ...state,
     discoveredSymptoms: symptoms,
     questionCounts: {
@@ -108,13 +147,17 @@ export function applyPatientReply(state: GameState, choiceId: string, responseTe
     anxiety,
     pain,
     result: terminal,
-    transcript: [
-      ...state.transcript,
-      {
-        id: createId(),
-        role: "patient",
-        text: resolvedText,
-      },
-    ],
+    transcript: newTranscript,
   };
+
+  // Generate and reveal a new choice if available
+  const newChoice = generateNewChoice(stateWithSymptoms);
+  if (newChoice) {
+    return {
+      ...stateWithSymptoms,
+      newlyRevealedChoices: [...stateWithSymptoms.newlyRevealedChoices, newChoice],
+    };
+  }
+
+  return stateWithSymptoms;
 }
